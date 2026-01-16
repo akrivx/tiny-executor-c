@@ -14,7 +14,7 @@ typedef struct texec_queue_create_info {
   size_t capacity;
 } texec_queue_create_info_t;
 
-// --- Queue Create Extensions
+// --- Queue Create Extensions ---
 
 typedef enum texec_queue_full_policy {
   TEXEC_QUEUE_FULL_REJECT = 0,
