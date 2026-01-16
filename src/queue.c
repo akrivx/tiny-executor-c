@@ -167,6 +167,8 @@ texec_status_t texec_queue_create(const texec_queue_create_info_t* info, texec_q
   const texec_queue_create_full_policy_info_t* full_policy_info = find_queue_full_policy_info(info);
   const texec_queue_create_allocator_info_t* alloc_info = find_queue_alloc_info(info);
 
+  if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
+
   const texec_queue_full_policy_t full_policy = full_policy_info ? full_policy_info->policy : TEXEC_QUEUE_FULL_BLOCK;
   texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
 
