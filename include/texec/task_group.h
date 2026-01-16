@@ -1,21 +1,16 @@
 #pragma once
 
-#include <stdbool.h>
 #include <stddef.h>
 
 #include "texec/base.h"
 #include "texec/task_handle.h"
+#include "texec/task_group_create_info.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct texec_task_group texec_task_group_t;
-
-typedef struct texec_task_group_create_info {
-  texec_structure_header_t header;
-  size_t max_tasks_hint;
-} texec_task_group_create_info_t;
 
 texec_status_t texec_task_group_create(const texec_task_group_create_info_t* info, texec_task_group_t** out);
 
