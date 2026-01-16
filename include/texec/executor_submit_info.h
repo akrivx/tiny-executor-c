@@ -26,10 +26,10 @@ typedef struct texec_executor_submit_deadline_info {
   uint64_t deadline_ns;
 } texec_executor_submit_deadline_info_t;
 
-typedef struct texec_executor_submit_trace_info {
+typedef struct texec_executor_submit_trace_context_info {
   texec_structure_header_t header;
-  const void* ctx;
-} texec_executor_submit_trace_info_t;
+  const void* trace_context;
+} texec_executor_submit_trace_context_info_t;
 
 #ifdef __cplusplus
 }
