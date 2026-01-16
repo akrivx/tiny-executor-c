@@ -12,3 +12,6 @@
 #include "texec/executor_create_info.h"
 #include "texec/executor_submit_info.h"
 #include "texec/executor.h"
+
+#include "texec/queue_create_info.h"
+#include "texec/queue.h"
