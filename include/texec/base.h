@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,6 +21,7 @@ typedef enum texec_structure_type {
   TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_INFO             = 0x1000,
   TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_INFO             = 0x2000,
   TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_INFO           = 0x3000,
+  TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO                = 0x4000,
   
   TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_INLINE_INFO      = 0x1001,
   TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO = 0x1002,
@@ -30,6 +33,9 @@ typedef enum texec_structure_type {
   TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_TRACE_CONTEXT    = 0x2003,
   
   TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_ALLOCATOR_INFO = 0x3001,
+
+  TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_FULL_POLICY_INFO    = 0x4001,
+  TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_ALLOCATOR_INFO      = 0x4002,
 } texec_structure_type_t;
 
 typedef void* (*texec_alloc_fn_t)(void* user, size_t size, size_t align);
