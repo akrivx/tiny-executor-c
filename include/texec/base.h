@@ -29,18 +29,6 @@ typedef enum texec_structure_type {
   TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_TRACE_CONTEXT    = 0x2003,
 } texec_structure_type_t;
 
-typedef enum texec_priority {
-  TEXEC_PRIORITY_LOW = -1,
-  TEXEC_PRIORITY_NORMAL = 0,
-  TEXEC_PRIORITY_HIGH = 1
-} texec_priority_t;
-
-typedef enum texec_backpressure_policy {
-  TEXEC_BACKPRESSURE_REJECT = 0,
-  TEXEC_BACKPRESSURE_BLOCK,
-  TEXEC_BACKPRESSURE_CALLER_RUNS
-} texec_backpressure_policy_t;
-
 typedef struct texec_structure_header {
   texec_structure_type_t type;
   const void* next;

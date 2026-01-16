@@ -21,11 +21,17 @@ typedef struct texec_executor_create_info {
 
 // --- Create Extensions ---
 
+typedef enum texec_executor_backpressure_policy {
+  TEXEC_EXECUTOR_BACKPRESSURE_REJECT = 0,
+  TEXEC_EXECUTOR_BACKPRESSURE_BLOCK,
+  TEXEC_EXECUTOR_BACKPRESSURE_CALLER_RUNS
+} texec_executor_backpressure_policy_t;
+
 typedef struct texec_executor_create_thread_pool_info {
   texec_structure_header_t header;
   size_t thread_count;
   size_t queue_capacity;
-  texec_backpressure_policy_t backpressure_policy;
+  texec_executor_backpressure_policy_t backpressure_policy;
 } texec_thread_pool_executor_create_info_t;
 
 typedef void* (*texec_executor_alloc_fn_t)(void* user, size_t size, size_t align);

@@ -16,9 +16,15 @@ typedef struct texec_executor_submit_info {
 
 // --- Submit Extensions ---
 
+typedef enum texec_executor_submit_priority {
+  TEXEC_EXECUTOR_SUBMIT_PRIORITY_LOW = -1,
+  TEXEC_EXECUTOR_SUBMIT_PRIORITY_NORMAL = 0,
+  TEXEC_EXECUTOR_SUBMIT_PRIORITY_HIGH = 1
+} texec_executor_submit_priority_t;
+
 typedef struct texec_executor_submit_priority_info {
   texec_structure_header_t header;
-  texec_priority_t priority;
+  texec_executor_submit_priority_t priority;
 } texec_executor_submit_priority_info_t;
 
 typedef struct texec_executor_submit_deadline_info {
