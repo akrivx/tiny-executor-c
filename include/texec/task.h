@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-typedef void (*texec_task_fn_t)(void* ctx);
+typedef int (*texec_task_fn_t)(void* ctx);
 typedef void (*texec_task_cleanup_fn_t)(void* ctx);
 
 typedef struct texec_task {
