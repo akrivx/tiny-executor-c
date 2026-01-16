@@ -31,14 +31,6 @@ typedef struct texec_queue_create_allocator_info {
   texec_allocator_t* allocator;
 } texec_queue_create_allocator_info_t;
 
-typedef void (*texec_queue_item_destroy_fn_t)(void* user, uintptr_t item);
-
-typedef struct texec_queue_create_item_destroy_info {
-  texec_structure_header_t header;
-  void* user;
-  texec_queue_item_destroy_fn_t destroy;
-} texec_queue_create_item_destroy_info_t;
-
 #ifdef __cplusplus
 }
 #endif
