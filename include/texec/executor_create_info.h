@@ -20,12 +20,6 @@ typedef struct texec_executor_create_info {
 
 // --- Create Extensions ---
 
-typedef enum texec_backpressure_policy {
-  TEXEC_BACKPRESSURE_REJECT = 0,
-  TEXEC_BACKPRESSURE_BLOCK,
-  TEXEC_BACKPRESSURE_CALLER_RUNS
-} texec_backpressure_policy_t;
-
 typedef struct texec_executor_create_thread_pool_info {
   texec_structure_header_t header;
   size_t thread_count;

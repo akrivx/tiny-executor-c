@@ -16,12 +16,6 @@ typedef struct texec_executor_submit_info {
 
 // --- Submit Extensions ---
 
-typedef enum texec_priority {
-  TEXEC_PRIORITY_LOW = -1,
-  TEXEC_PRIORITY_NORMAL = 0,
-  TEXEC_PRIORITY_HIGH = 1
-} texec_priority_t;
-
 typedef struct texec_executor_submit_priority_info {
   texec_structure_header_t header;
   texec_priority_t priority;
