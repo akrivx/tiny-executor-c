@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "texec/base.h"
+#include "texec/task.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,9 +38,10 @@ typedef struct texec_executor_create_allocator_info {
   texec_executor_free_fn_t free;
 } texec_executor_create_allocator_info_t;
 
-typedef void (*texec_executor_on_submit_fn_t)(void* user);
-typedef void (*texec_executor_on_task_begin_fn_t)(void* user);
-typedef void (*texec_executor_on_task_end_fn_t)(void* user);
+struct texec_executor_submit_info;
+typedef void (*texec_executor_on_submit_fn_t)(void* user, const struct texec_executor_submit_info* submit_info);
+typedef void (*texec_executor_on_task_begin_fn_t)(void* user, const texec_task* task, const void* trace_context);
+typedef void (*texec_executor_on_task_end_fn_t)(void* user, const texec_task* task, const void* trace_context, int task_status);
 
 typedef struct texec_executor_create_diagnostics_info {
   texec_structure_header_t header;
