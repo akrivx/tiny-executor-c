@@ -35,17 +35,13 @@ static inline bool task_handle_init(texec_task_handle_t* h, texec_allocator_t* a
   return true;
 }
 
-static inline void task_handle_destroy(texec_task_handle_t* h) {
-  cnd_destroy(&h->cv);
-  mtx_destroy(&h->mtx);
-}
-
 static inline void task_handle_free(texec_task_handle_t* h) {
   texec__free(h->alloc, h, sizeof(*h), _Alignof(texec_task_handle_t));
 }
 
-static inline void task_handle_delete(texec_task_handle_t* h) {
-  task_handle_destroy(h);
+static inline void task_handle_destroy(texec_task_handle_t* h) {
+  cnd_destroy(&h->cv);
+  mtx_destroy(&h->mtx);
   task_handle_free(h);
 }
 
@@ -107,7 +103,7 @@ void texec_task_handle_release(texec_task_handle_t* h) {
 
   if (atomic_fetch_sub_explicit(&h->refcount, 1, memory_order_release) == 1u) {
     atomic_thread_fence(memory_order_acquire);
-    task_handle_delete(h);
+    task_handle_destroy(h);
   }
 }
 
