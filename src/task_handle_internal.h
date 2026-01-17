@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdbool.h>
-
 #include "texec/base.h"
 #include "texec/task_handle.h"
 
