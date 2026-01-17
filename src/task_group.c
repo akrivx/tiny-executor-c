@@ -94,7 +94,7 @@ texec_status_t texec_task_group_create(const texec_task_group_create_info_t* inf
 
   const texec_task_group_create_allocator_info_t* alloc_info = find_group_alloc_info(info);
   if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
-  texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
+  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
 
   texec_task_group_t* g = texec__allocate(alloc, sizeof(*g), _Alignof(texec_task_group_t));
   if (!g) return TEXEC_STATUS_OUT_OF_MEMORY;
