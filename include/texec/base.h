@@ -48,7 +48,7 @@ typedef struct texec_allocator {
   texec_free_fn_t free;
 } texec_allocator_t;
 
-void texec_set_default_allocator(texec_allocator_t* allocator);
+void texec_set_default_allocator(const texec_allocator_t* allocator);
 
 typedef struct texec_structure_header {
   texec_structure_type_t type;

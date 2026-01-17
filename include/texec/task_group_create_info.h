@@ -17,7 +17,7 @@ typedef struct texec_task_group_create_info {
 
 typedef struct texec_task_group_create_allocator_info {
   texec_structure_header_t header;
-  texec_allocator_t* allocator;
+  const texec_allocator_t* allocator;
 } texec_task_group_create_allocator_info_t;
 
 #ifdef __cplusplus

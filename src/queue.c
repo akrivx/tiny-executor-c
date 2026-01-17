@@ -12,7 +12,7 @@
 struct texec_queue {
   size_t capacity;
   texec_queue_full_policy_t full_policy;
-  texec_allocator_t* alloc;
+  const texec_allocator_t* alloc;
 
   uintptr_t* buf;
   size_t head;
@@ -58,7 +58,7 @@ static inline bool queue_init_sync_prims(texec_queue_t* q) {
 static inline texec_status_t queue_init(texec_queue_t* q,
                                         size_t capacity,
                                         texec_queue_full_policy_t full_policy,
-                                        texec_allocator_t* alloc) {
+                                        const texec_allocator_t* alloc) {
   uintptr_t* qbuf = texec__allocate(alloc, capacity * sizeof(uintptr_t), _Alignof(uintptr_t));
   if (!qbuf) return TEXEC_STATUS_OUT_OF_MEMORY;
   if (!queue_init_sync_prims(q)) {
@@ -170,7 +170,7 @@ texec_status_t texec_queue_create(const texec_queue_create_info_t* info, texec_q
   if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   const texec_queue_full_policy_t full_policy = full_policy_info ? full_policy_info->policy : TEXEC_QUEUE_FULL_BLOCK;
-  texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
+  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
 
   texec_queue_t* q = texec__allocate(alloc, sizeof(*q), _Alignof(texec_queue_t));
   if (!q) return TEXEC_STATUS_OUT_OF_MEMORY;

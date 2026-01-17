@@ -11,12 +11,12 @@ struct texec_task_handle {
   mtx_t mtx;
   cnd_t cv;
   atomic_uint refcount;
-  texec_allocator_t* alloc;
+  const texec_allocator_t* alloc;
   int result;
   bool done;
 };
 
-static inline bool task_handle_init(texec_task_handle_t* h, texec_allocator_t* alloc) {
+static inline bool task_handle_init(texec_task_handle_t* h, const texec_allocator_t* alloc) {
   if (!h) return false;
 
   if (mtx_init(&h->mtx, mtx_plain) != thrd_success) {
@@ -50,7 +50,7 @@ static inline texec_status_t task_handle_unlock_return(texec_task_handle_t* h, t
   return st;
 }
 
-texec_task_handle_t* texec__task_handle_create(texec_allocator_t* alloc) {
+texec_task_handle_t* texec__task_handle_create(const texec_allocator_t* alloc) {
   texec_task_handle_t* h = texec__allocate(alloc, sizeof(*h), _Alignof(texec_task_handle_t));
   if (!task_handle_init(h, alloc)) {
     task_handle_free(h);
