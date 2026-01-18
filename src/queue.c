@@ -7,7 +7,7 @@
 #include <string.h>
 #include <threads.h>
 
-#include "allocator_internal.h"
+#include "internal/allocator.h"
 
 struct texec_queue {
   size_t capacity;
@@ -59,10 +59,10 @@ static inline texec_status_t queue_init(texec_queue_t* q,
                                         size_t capacity,
                                         texec_queue_full_policy_t full_policy,
                                         const texec_allocator_t* alloc) {
-  uintptr_t* qbuf = texec__allocate(alloc, capacity * sizeof(uintptr_t), _Alignof(uintptr_t));
+  uintptr_t* qbuf = texec_allocate(alloc, capacity * sizeof(uintptr_t), _Alignof(uintptr_t));
   if (!qbuf) return TEXEC_STATUS_OUT_OF_MEMORY;
   if (!queue_init_sync_prims(q)) {
-    texec__free(alloc, qbuf, capacity * sizeof(uintptr_t), _Alignof(uintptr_t));
+    texec_free(alloc, qbuf, capacity * sizeof(uintptr_t), _Alignof(uintptr_t));
     return TEXEC_STATUS_INTERNAL_ERROR;
   }
   q->capacity = capacity;
@@ -170,14 +170,14 @@ texec_status_t texec_queue_create(const texec_queue_create_info_t* info, texec_q
   if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   const texec_queue_full_policy_t full_policy = full_policy_info ? full_policy_info->policy : TEXEC_QUEUE_FULL_BLOCK;
-  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
+  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec_get_default_allocator();
 
-  texec_queue_t* q = texec__allocate(alloc, sizeof(*q), _Alignof(texec_queue_t));
+  texec_queue_t* q = texec_allocate(alloc, sizeof(*q), _Alignof(texec_queue_t));
   if (!q) return TEXEC_STATUS_OUT_OF_MEMORY;
 
   texec_status_t st = queue_init(q, info->capacity, full_policy, alloc);
   if (st != TEXEC_STATUS_OK) {
-    texec__free(alloc, q, sizeof(*q), _Alignof(texec_queue_t));
+    texec_free(alloc, q, sizeof(*q), _Alignof(texec_queue_t));
   } else {
     *out_q = q;
   }
@@ -193,8 +193,8 @@ void texec_queue_destroy(texec_queue_t* q) {
   cnd_destroy(&q->not_empty);
   mtx_destroy(&q->mtx);
 
-  texec__free(q->alloc, q->buf, sizeof(uintptr_t), _Alignof(uintptr_t));
-  texec__free(q->alloc, q, sizeof(*q), _Alignof(texec_queue_t));
+  texec_free(q->alloc, q->buf, sizeof(uintptr_t), _Alignof(uintptr_t));
+  texec_free(q->alloc, q, sizeof(*q), _Alignof(texec_queue_t));
 }
 
 void texec_queue_close(texec_queue_t* q) {

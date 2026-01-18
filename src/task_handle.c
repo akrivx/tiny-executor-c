@@ -5,7 +5,7 @@
 #include <string.h>
 #include <threads.h>
 
-#include "allocator_internal.h"
+#include "internal/allocator.h"
 
 struct texec_task_handle {
   mtx_t mtx;
@@ -36,7 +36,7 @@ static inline bool task_handle_init(texec_task_handle_t* h, const texec_allocato
 }
 
 static inline void task_handle_free(texec_task_handle_t* h) {
-  texec__free(h->alloc, h, sizeof(*h), _Alignof(texec_task_handle_t));
+  texec_free(h->alloc, h, sizeof(*h), _Alignof(texec_task_handle_t));
 }
 
 static inline void task_handle_destroy(texec_task_handle_t* h) {
@@ -51,7 +51,7 @@ static inline texec_status_t task_handle_unlock_return(texec_task_handle_t* h, t
 }
 
 texec_task_handle_t* texec__task_handle_create(const texec_allocator_t* alloc) {
-  texec_task_handle_t* h = texec__allocate(alloc, sizeof(*h), _Alignof(texec_task_handle_t));
+  texec_task_handle_t* h = texec_allocate(alloc, sizeof(*h), _Alignof(texec_task_handle_t));
   if (!task_handle_init(h, alloc)) {
     task_handle_free(h);
     return NULL;

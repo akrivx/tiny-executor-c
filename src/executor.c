@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-#include "allocator_internal.h"
+#include "internal/allocator.h"
 #include "executor_internal.h"
 
 static const size_t TP_EXECUTOR_DEFAULT_THREAD_COUNT = 1;
@@ -58,9 +58,9 @@ texec_status_t texec_executor_create(const texec_executor_create_info_t* info, t
   if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
   
   const texec_executor_diagnostics_t* diag = diag_info ? diag_info->diag : NULL;
-  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
+  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec_get_default_allocator();
 
-  texec_executor_t* ex = texec__allocate(alloc, sizeof(*ex), _Alignof(texec_executor_t));
+  texec_executor_t* ex = texec_allocate(alloc, sizeof(*ex), _Alignof(texec_executor_t));
   if (!ex) return TEXEC_STATUS_OUT_OF_MEMORY;
 
   ex->vtbl = NULL;
@@ -89,7 +89,7 @@ texec_status_t texec_executor_create(const texec_executor_create_info_t* info, t
   }
 
   if (st != TEXEC_STATUS_OK) {
-    texec__free(alloc, ex, sizeof(*ex), _Alignof(texec_executor_t));
+    texec_free(alloc, ex, sizeof(*ex), _Alignof(texec_executor_t));
   } else {
     *out_executor = ex;
   }
@@ -119,7 +119,7 @@ void texec_executor_await_termination(texec_executor_t* ex) {
 void texec_executor_destroy(texec_executor_t* ex) {
   if (!ex) return;
   ex->vtbl->destroy(ex->impl);
-  texec__free(ex->impl->alloc, ex, sizeof(*ex), _Alignof(texec_executor_t));
+  texec_free(ex->impl->alloc, ex, sizeof(*ex), _Alignof(texec_executor_t));
 }
 
 texec_status_t texec_executor_query(const texec_executor_t* ex, texec_executor_capability_t cap, void* out_value) {

@@ -23,7 +23,7 @@ typedef struct thread_pool_executor_impl {
 } thread_pool_executor_impl_t;
 
 static void tp_free(thread_pool_executor_impl_t* ex) {
-  texec__free(ex->base.alloc, ex, sizeof(*ex), _Alignof(thread_pool_executor_impl_t));
+  texec_free(ex->base.alloc, ex, sizeof(*ex), _Alignof(thread_pool_executor_impl_t));
 }
 
 static void tp_destroy_no_wait(thread_pool_executor_impl_t* ex) {  
@@ -32,7 +32,7 @@ static void tp_destroy_no_wait(thread_pool_executor_impl_t* ex) {
   }
 
   if (ex->threads) {
-    texec__free(ex->base.alloc, ex->threads, ex->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
+    texec_free(ex->base.alloc, ex->threads, ex->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
   }
   
   mtx_destroy(&ex->mtx);
@@ -266,7 +266,7 @@ static const texec__executor_vtable_t TP_VTBL = {
 texec_status_t texec__executor_create_thread_pool(const texec__thread_pool_executor_config_t* cfg, texec_executor_t* ex) {
   if (!cfg || !ex) return TEXEC_STATUS_INVALID_ARGUMENT;
 
-  thread_pool_executor_impl_t* tp_ex = texec__allocate(cfg->alloc, sizeof(*tp_ex), _Alignof(thread_pool_executor_impl_t));
+  thread_pool_executor_impl_t* tp_ex = texec_allocate(cfg->alloc, sizeof(*tp_ex), _Alignof(thread_pool_executor_impl_t));
   if (!tp_ex) return TEXEC_STATUS_OUT_OF_MEMORY;
   
   tp_ex->base.alloc = cfg->alloc;
@@ -284,7 +284,7 @@ texec_status_t texec__executor_create_thread_pool(const texec__thread_pool_execu
     return TEXEC_STATUS_INTERNAL_ERROR;
   }
 
-  thrd_t* threads = texec__allocate(tp_ex->base.alloc, tp_ex->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
+  thrd_t* threads = texec_allocate(tp_ex->base.alloc, tp_ex->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
   if (!threads) {
     tp_destroy_no_wait(tp_ex);
     return TEXEC_STATUS_OUT_OF_MEMORY;

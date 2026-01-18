@@ -4,7 +4,7 @@
 #include <threads.h>
 #include <string.h>
 
-#include "allocator_internal.h"
+#include "internal/allocator.h"
 
 static const size_t TASK_GROUP_DEFAULT_CAPACITY = 8;
 static const float TASK_GROUP_EXPANSION_FACTOR = 1.5f;
@@ -27,11 +27,11 @@ find_group_alloc_info(const texec_task_group_create_info_t* info) {
 }
 
 static inline texec_task_handle_t** alloc_task_handles(texec_allocator_t* alloc, size_t n) {
-  return texec__allocate(alloc, n * sizeof(texec_task_handle_t*), _Alignof(texec_task_handle_t*));
+  return texec_allocate(alloc, n * sizeof(texec_task_handle_t*), _Alignof(texec_task_handle_t*));
 }
 
 static inline void free_task_handles(texec_allocator_t* alloc, texec_task_handle_t** handles, size_t n) {
-  texec__free(alloc, handles, n * sizeof(*handles), _Alignof(texec_task_handle_t*));
+  texec_free(alloc, handles, n * sizeof(*handles), _Alignof(texec_task_handle_t*));
 }
 
 static inline bool task_group_ensure_capacity(texec_task_group_t* g, size_t min_capacity) {
@@ -94,15 +94,15 @@ texec_status_t texec_task_group_create(const texec_task_group_create_info_t* inf
 
   const texec_task_group_create_allocator_info_t* alloc_info = find_group_alloc_info(info);
   if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
-  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec__get_default_allocator();
+  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec_get_default_allocator();
 
-  texec_task_group_t* g = texec__allocate(alloc, sizeof(*g), _Alignof(texec_task_group_t));
+  texec_task_group_t* g = texec_allocate(alloc, sizeof(*g), _Alignof(texec_task_group_t));
   if (!g) return TEXEC_STATUS_OUT_OF_MEMORY;
 
   const size_t capacity = (info->capacity ? info->capacity : TASK_GROUP_DEFAULT_CAPACITY);
   texec_status_t st = task_group_init(g, capacity, alloc);
   if (st != TEXEC_STATUS_OK) {
-    texec__free(alloc, g, sizeof(*g), _Alignof(texec_task_group_t));
+    texec_free(alloc, g, sizeof(*g), _Alignof(texec_task_group_t));
   } else {
     *out_group = g;
   }
@@ -124,7 +124,7 @@ void texec_task_group_destroy(texec_task_group_t* g) {
   if (g->handles) {
     free_task_handles(g->alloc, g->handles, g->capacity);
   }
-  texec__free(g->alloc, g, sizeof(*g), _Alignof(texec_task_group_t));
+  texec_free(g->alloc, g, sizeof(*g), _Alignof(texec_task_group_t));
 }
 
 texec_status_t task_group_add(texec_task_group_t* g, texec_task_handle_t* h) {

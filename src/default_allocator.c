@@ -1,5 +1,5 @@
 #include "texec/base.h"
-#include "allocator_internal.h"
+#include "internal/allocator.h"
 
 #include <stdlib.h>
 
@@ -22,7 +22,7 @@ static const texec_allocator_t standard_allocator = {
   .free = &standard_free
 };
 
-static const texec_allocator_t* default_allocator = &standard_alloc;
+static const texec_allocator_t* default_allocator = &standard_allocator;
 
 void texec_set_default_allocator(const texec_allocator_t* allocator) {
   if (allocator) {
@@ -30,6 +30,6 @@ void texec_set_default_allocator(const texec_allocator_t* allocator) {
   }
 }
 
-const texec_allocator_t* texec__get_default_allocator(void) {
+const texec_allocator_t* texec_get_default_allocator(void) {
   return default_allocator;
 }

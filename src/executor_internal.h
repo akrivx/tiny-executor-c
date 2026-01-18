@@ -4,7 +4,7 @@
 #include "texec/task.h"
 #include "texec/task_handle.h"
 
-#include "allocator_internal.h"
+#include "internal/allocator.h"
 
 typedef struct texec__executor_impl {
   const texec_allocator_t* alloc;
@@ -73,11 +73,11 @@ static inline void texec__executor_diagnostics_on_task_end(const texec_executor_
 }
 
 static inline texec__executor_work_item_t* texec__executor_impl_alloc_work_item(const texec__executor_impl_t* ex) {
-  return texec__allocate(ex->alloc, sizeof(texec__executor_work_item_t), _Alignof(texec__executor_work_item_t));
+  return texec_allocate(ex->alloc, sizeof(texec__executor_work_item_t), _Alignof(texec__executor_work_item_t));
 }
 
 static inline void texec__executor_impl_free_work_item(const texec__executor_impl_t* ex, texec__executor_work_item_t* wi) {
-  texec__free(ex->alloc, wi, sizeof(*wi), _Alignof(texec__executor_work_item_t));
+  texec_free(ex->alloc, wi, sizeof(*wi), _Alignof(texec__executor_work_item_t));
 }
 
 static inline void texec__executor_impl_destroy_work_item(const texec__executor_impl_t* ex, texec__executor_work_item_t* wi) {
