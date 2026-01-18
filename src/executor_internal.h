@@ -90,6 +90,6 @@ static inline void texec__executor_impl_consume_work_item(const texec__executor_
   const int result = wi->task.fn(wi->task.ctx);
   texec__executor_diagnostics_on_task_end(ex->diag, &wi->task, wi->trace_context, result);
   texec__task_cleanup(&wi->task);
-  texec__task_handle_complete(wi->handle, result);
+  texec_task_handle_complete(wi->handle, result);
   texec__executor_impl_destroy_work_item(ex, wi);
 }

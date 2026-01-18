@@ -50,7 +50,7 @@ static inline texec_status_t task_handle_unlock_return(texec_task_handle_t* h, t
   return st;
 }
 
-texec_task_handle_t* texec__task_handle_create(const texec_allocator_t* alloc) {
+texec_task_handle_t* texec_task_handle_create(const texec_allocator_t* alloc) {
   texec_task_handle_t* h = texec_allocate(alloc, sizeof(*h), _Alignof(texec_task_handle_t));
   if (!task_handle_init(h, alloc)) {
     task_handle_free(h);
@@ -59,7 +59,7 @@ texec_task_handle_t* texec__task_handle_create(const texec_allocator_t* alloc) {
   return h;
 }
 
-void texec__task_handle_complete(texec_task_handle_t* h, int result) {
+void texec_task_handle_complete(texec_task_handle_t* h, int result) {
   if (!h) return;
 
   mtx_lock(&h->mtx);

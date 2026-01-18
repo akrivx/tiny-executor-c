@@ -4,7 +4,7 @@
 
 #include "texec/queue.h"
 #include "texec/task_group.h"
-#include "task_handle_internal.h"
+#include "internal/task_handle.h"
 
 typedef struct thread_pool_executor_impl {
   texec__executor_impl_t base;
@@ -138,7 +138,7 @@ static texec_status_t tp_vtbl_submit(texec__executor_impl_t* ex,  const texec_ex
 
   const void* trace_context = texec__executor_submit_get_trace_context(info);
 
-  texec_task_handle_t* h = texec__task_handle_create(ex->alloc);
+  texec_task_handle_t* h = texec_task_handle_create(ex->alloc);
   if (!h) return TEXEC_STATUS_OUT_OF_MEMORY;
 
   texec_status_t st = tp_submit_with_handle((thread_pool_executor_impl_t*)ex, info->task, trace_context, h);
