@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-static void* standard_alloc(void* user, size_t size, size_t align) {
+static void* standard_allocate(void* user, size_t size, size_t align) {
   (void)user;
   (void)align;
   return malloc(size);
@@ -18,7 +18,7 @@ static void standard_free(void* user, void* ptr, size_t size, size_t align) {
 
 static const texec_allocator_t standard_allocator = {
   .user = NULL,
-  .alloc = &standard_alloc,
+  .allocate = &standard_allocate,
   .free = &standard_free
 };
 

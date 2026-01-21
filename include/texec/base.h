@@ -44,7 +44,7 @@ typedef void (*texec_free_fn_t)(void* user, void* ptr, size_t size, size_t align
 
 typedef struct texec_allocator {
   void* user;
-  texec_alloc_fn_t alloc;
+  texec_alloc_fn_t allocate;
   texec_free_fn_t free;
 } texec_allocator_t;
 
