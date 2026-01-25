@@ -15,12 +15,11 @@ extern "C" {
 typedef struct texec_executor texec_executor_t;
 
 texec_status_t texec_executor_create(const texec_executor_create_info_t* info, texec_executor_t** out_executor);
+texec_status_t texec_executor_destroy(texec_executor_t* ex);
 texec_status_t texec_executor_submit(texec_executor_t* ex, const texec_executor_submit_info_t* info, texec_task_handle_t** out_handle);
 texec_status_t texec_executor_submit_many(texec_executor_t* ex, const texec_executor_submit_info_t* infos, size_t count, texec_task_group_t** out_group);
-
-void texec_executor_shutdown(texec_executor_t* ex);
-void texec_executor_await_termination(texec_executor_t* ex);
-void texec_executor_destroy(texec_executor_t* ex);
+void texec_executor_close(texec_executor_t* ex);
+void texec_executor_join(texec_executor_t* ex);
 
 typedef enum texec_executor_capability {
   TEXEC_EXECUTOR_CAPABILITY_WORKER_COUNT = 1,  // out: size_t

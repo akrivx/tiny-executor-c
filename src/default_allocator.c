@@ -27,6 +27,8 @@ static const texec_allocator_t* default_allocator = &standard_allocator;
 void texec_set_default_allocator(const texec_allocator_t* allocator) {
   if (allocator) {
     default_allocator = allocator;
+  } else {
+    default_allocator = &standard_allocator;
   }
 }
 

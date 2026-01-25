@@ -122,7 +122,7 @@ static inline texec_status_t queue_push_impl(texec_queue_t* q, uintptr_t item, b
   }
 
   if (q->closed) {
-    return queue_unlock_return(q, TEXEC_STATUS_SHUTDOWN);
+    return queue_unlock_return(q, TEXEC_STATUS_CLOSED);
   }
 
   queue_push_item(q, item);
@@ -145,7 +145,7 @@ static inline texec_status_t queue_pop_impl(texec_queue_t* q, uintptr_t* out_ite
   }
 
   if (q->closed && queue_is_empty(q)) {
-    return queue_unlock_return(q, TEXEC_STATUS_SHUTDOWN);
+    return queue_unlock_return(q, TEXEC_STATUS_CLOSED);
   }
 
   *out_item = queue_pop_item(q);
