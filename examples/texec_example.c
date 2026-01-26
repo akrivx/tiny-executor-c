@@ -33,7 +33,6 @@ int main(void) {
     .header = {.type = TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_INFO, .next = NULL},
     .task = {
       .fn = hello_task,
-      .ctx = NULL,
       .ctx = "work item",
     },
   };
