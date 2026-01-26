@@ -118,7 +118,7 @@ void texec_task_handle_wait(texec_task_handle_t* h) {
   mtx_unlock(&h->mtx);
 }
 
-bool texec_task_handle_is_done(const texec_task_handle_t* h) {
+bool texec_task_handle_is_done(texec_task_handle_t* h) {
   if (!h) return false;
 
   mtx_lock(&h->mtx);
@@ -127,7 +127,7 @@ bool texec_task_handle_is_done(const texec_task_handle_t* h) {
   return done;
 }
 
-texec_status_t texec_task_handle_result(const texec_task_handle_t* h, int* out_result) {
+texec_status_t texec_task_handle_result(texec_task_handle_t* h, int* out_result) {
   if (!h || !out_result) return TEXEC_STATUS_INVALID_ARGUMENT;
   mtx_lock(&h->mtx);
   if (!h->done) return task_handle_unlock_return(h, TEXEC_STATUS_NOT_READY);

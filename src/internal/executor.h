@@ -5,6 +5,7 @@
 #include "texec/task_handle.h"
 
 #include "internal/allocator.h"
+#include "internal/task_handle.h"
 #include "internal/work_item.h"
 
 typedef enum texec_executor_state {
@@ -69,5 +70,5 @@ static inline void texec_executor_consume_work_item(const texec_executor_t* ex, 
   texec_executor_diagnostics_on_task_end(ex->diag, &wi->task, wi->trace_context, result);
   texec_task_cleanup(&wi->task);
   texec_task_handle_complete(wi->handle, result);
-  texec_work_item_destroy(ex, wi);
+  texec_work_item_destroy(wi, ex->alloc);
 }

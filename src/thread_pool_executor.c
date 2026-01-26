@@ -35,7 +35,7 @@ static inline const thread_pool_executor_t* tp_from_const_base(const texec_execu
   return (const thread_pool_executor_t*)ex;
 }
 
-static texec_executor_state_t tp_get_state(const thread_pool_executor_t* ex) {
+static texec_executor_state_t tp_get_state(thread_pool_executor_t* ex) {
   mtx_lock(&ex->mtx);
   const texec_executor_state_t state = ex->base.state;
   mtx_unlock(&ex->mtx);
@@ -126,7 +126,7 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex,
   case TEXEC_BACKPRESSURE_CALLER_RUNS:
     st = texec_queue_try_push_ptr(ex->q, wi);
     if (st == TEXEC_STATUS_REJECTED) {
-      texec_executor_consume_work_item(ex, wi);
+      texec_executor_consume_work_item(&ex->base, wi);
       st = TEXEC_STATUS_OK;
     }
     break;

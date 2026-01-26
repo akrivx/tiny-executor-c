@@ -11,10 +11,10 @@ static const float TASK_GROUP_EXPANSION_FACTOR = 1.5f;
 
 struct texec_task_group {
   mtx_t mtx;
+  const texec_allocator_t* alloc;
   texec_task_handle_t** handles;
   size_t count;
   size_t capacity;
-  texec_allocator_t* alloc;
   bool closed;
 };
 
@@ -23,11 +23,11 @@ find_group_alloc_info(const texec_task_group_create_info_t* info) {
   return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_ALLOCATOR_INFO);
 }
 
-static inline texec_task_handle_t** alloc_task_handles(texec_allocator_t* alloc, size_t n) {
+static inline texec_task_handle_t** alloc_task_handles(const texec_allocator_t* alloc, size_t n) {
   return texec_allocate(alloc, n * sizeof(texec_task_handle_t*), _Alignof(texec_task_handle_t*));
 }
 
-static inline void free_task_handles(texec_allocator_t* alloc, texec_task_handle_t** handles, size_t n) {
+static inline void free_task_handles(const texec_allocator_t* alloc, texec_task_handle_t** handles, size_t n) {
   texec_free(alloc, handles, n * sizeof(*handles), _Alignof(texec_task_handle_t*));
 }
 
@@ -57,7 +57,7 @@ static inline bool task_group_ensure_capacity(texec_task_group_t* g, size_t min_
   return true;
 }
 
-static inline texec_status_t task_group_init(texec_task_group_t* g, size_t capacity, texec_allocator_t* alloc) {
+static inline texec_status_t task_group_init(texec_task_group_t* g, size_t capacity, const texec_allocator_t* alloc) {
   assert(capacity != 0);
 
   if (mtx_init(&g->mtx, mtx_plain) != thrd_success) return TEXEC_STATUS_INTERNAL_ERROR;
@@ -68,10 +68,10 @@ static inline texec_status_t task_group_init(texec_task_group_t* g, size_t capac
     return TEXEC_STATUS_OUT_OF_MEMORY;
   }
 
+  g->alloc = alloc;
   g->handles = handles;
   g->count = 0;
   g->capacity = capacity;
-  g->alloc = alloc;
   g->closed = false;
   return TEXEC_STATUS_OK;
 }
