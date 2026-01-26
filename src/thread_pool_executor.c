@@ -122,17 +122,17 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex,
   case TEXEC_BACKPRESSURE_REJECT:
     st = texec_queue_try_push_ptr(ex->q, wi);
     break;
-    
+  
+  case TEXEC_BACKPRESSURE_BLOCK:
+    st = texec_queue_push_ptr(ex->q, wi);
+    break;
+
   case TEXEC_BACKPRESSURE_CALLER_RUNS:
     st = texec_queue_try_push_ptr(ex->q, wi);
     if (st == TEXEC_STATUS_REJECTED) {
       texec_executor_consume_work_item(ex, wi);
       st = TEXEC_STATUS_OK;
     }
-    break;
-
-  case TEXEC_BACKPRESSURE_BLOCK:
-    st = texec_queue_push_ptr(ex->q, wi);
     break;
   
   default:
