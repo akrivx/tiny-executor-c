@@ -12,7 +12,7 @@ extern "C" {
 typedef struct texec_queue texec_queue_t;
 
 texec_status_t texec_queue_create(const texec_queue_create_info_t* info, texec_queue_t** out_q);
-void texec_queue_destroy(texec_queue_t* q);
+texec_status_t texec_queue_destroy(texec_queue_t* q);
 void texec_queue_close(texec_queue_t* q);
 
 texec_status_t texec_queue_try_push(texec_queue_t* q, uintptr_t item);
