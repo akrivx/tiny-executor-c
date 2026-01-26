@@ -10,8 +10,8 @@
 struct texec_task_handle {
   mtx_t mtx;
   cnd_t cv;
-  atomic_uint refcount;
   const texec_allocator_t* alloc;
+  atomic_uint refcount;
   int result;
   bool done;
 };
@@ -39,12 +39,6 @@ static inline void task_handle_free(texec_task_handle_t* h) {
   texec_free(h->alloc, h, sizeof(*h), _Alignof(texec_task_handle_t));
 }
 
-static inline void task_handle_destroy(texec_task_handle_t* h) {
-  cnd_destroy(&h->cv);
-  mtx_destroy(&h->mtx);
-  task_handle_free(h);
-}
-
 static inline texec_status_t task_handle_unlock_return(texec_task_handle_t* h, texec_status_t st) {
   mtx_unlock(&h->mtx);
   return st;
@@ -57,6 +51,13 @@ texec_task_handle_t* texec_task_handle_create(const texec_allocator_t* alloc) {
     return NULL;
   }
   return h;
+}
+
+void texec_task_handle_destroy(texec_task_handle_t* h) {
+  if (!h) return;
+  cnd_destroy(&h->cv);
+  mtx_destroy(&h->mtx);
+  task_handle_free(h);
 }
 
 void texec_task_handle_complete(texec_task_handle_t* h, int result) {
@@ -103,7 +104,7 @@ void texec_task_handle_release(texec_task_handle_t* h) {
 
   if (atomic_fetch_sub_explicit(&h->refcount, 1, memory_order_release) == 1u) {
     atomic_thread_fence(memory_order_acquire);
-    task_handle_destroy(h);
+    texec_task_handle_destroy(h);
   }
 }
 
