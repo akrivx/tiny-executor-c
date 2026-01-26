@@ -15,9 +15,9 @@ typedef struct texec_task_group texec_task_group_t;
 texec_status_t texec_task_group_create(const texec_task_group_create_info_t* info, texec_task_group_t** out_group);
 void texec_task_group_destroy(texec_task_group_t* g);
 
-texec_status_t task_group_add(texec_task_group_t* g, texec_task_handle_t* h); // retains handle internally
+texec_status_t texec_task_group_add(texec_task_group_t* g, texec_task_handle_t* h); // retains handle internally
 
-texec_status_t task_group_wait(texec_task_group_t* g);
+texec_status_t texec_task_group_wait(texec_task_group_t* g);
 
 #ifdef __cplusplus
 }

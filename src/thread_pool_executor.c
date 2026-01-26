@@ -35,7 +35,7 @@ static inline const thread_pool_executor_t* tp_from_const_base(const texec_execu
   return (const thread_pool_executor_t*)ex;
 }
 
-static texec_executor_state_t tp_get_state(const thread_pool_executor_t* ex) {
+static texec_executor_state_t tp_get_state(thread_pool_executor_t* ex) {
   mtx_lock(&ex->mtx);
   const texec_executor_state_t state = ex->base.state;
   mtx_unlock(&ex->mtx);
@@ -130,7 +130,7 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex,
   case TEXEC_BACKPRESSURE_CALLER_RUNS:
     st = texec_queue_try_push_ptr(ex->q, wi);
     if (st == TEXEC_STATUS_REJECTED) {
-      texec_executor_consume_work_item(ex, wi);
+      texec_executor_consume_work_item(&ex->base, wi);
       st = TEXEC_STATUS_OK;
     }
     break;
@@ -306,6 +306,7 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
     .submit_many = tp_vtbl_submit_many,
     .close = tp_vtbl_close,
     .join = tp_vtbl_join,
+    .destroy = tp_vtbl_destroy,
     .query = tp_vtbl_query,
   };
   
@@ -324,7 +325,7 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
     return TEXEC_STATUS_INTERNAL_ERROR;
   }
 
-  thrd_t* threads = texec_allocate(tp_ex->base.alloc, tp_ex->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
+  thrd_t* threads = texec_allocate(tp_ex->base.alloc, cfg->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
   if (!threads) {
     tp_destroy_unchecked(tp_ex);
     return TEXEC_STATUS_OUT_OF_MEMORY;
