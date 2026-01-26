@@ -37,6 +37,11 @@ typedef struct texec_executor_submit_trace_context_info {
   const void* trace_context;
 } texec_executor_submit_trace_context_info_t;
 
+typedef struct texec_executor_submit_backpressure_info {
+  texec_structure_header_t header;
+  texec_backpressure_policy_t backpressure;
+} texec_executor_submit_backpressure_info_t;
+
 #ifdef __cplusplus
 }
 #endif

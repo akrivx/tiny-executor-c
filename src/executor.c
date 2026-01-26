@@ -35,7 +35,7 @@ static inline texec_status_t executor_create_thread_pool(const texec_allocator_t
     .diag = diag,
     .thread_count = tp_info->thread_count ? tp_info->thread_count : TP_EXECUTOR_DEFAULT_THREAD_COUNT,
     .queue_capacity = tp_info->queue_capacity ? tp_info->queue_capacity : TP_EXECUTOR_DEFAULT_QUEUE_CAPACITY,
-    .backpressure_policy = tp_info->backpressure_policy
+    .backpressure = tp_info->backpressure
   };
 
   return texec_executor_create_thread_pool(&cfg, out_ex);

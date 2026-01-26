@@ -42,15 +42,10 @@ typedef struct texec_thread_pool_executor_config {
   const texec_executor_diagnostics_t* diag;
   size_t thread_count;
   size_t queue_capacity;
-  texec_executor_backpressure_policy_t backpressure_policy;
+  texec_backpressure_policy_t backpressure;
 } texec_thread_pool_executor_config_t;
 
 texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executor_config_t* cfg, texec_executor_t** out_ex);
-
-static inline const void* texec_executor_submit_get_trace_context(const texec_executor_submit_info_t* info) {
-  const texec_executor_submit_trace_context_info_t* ti = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_TRACE_CONTEXT);
-  return ti ? ti->trace_context : NULL;
-}
 
 static inline void texec_executor_diagnostics_on_submit(const texec_executor_diagnostics_t* diag, const struct texec_executor_submit_info* submit_info) {
   if (diag) diag->on_submit(diag->user, submit_info);

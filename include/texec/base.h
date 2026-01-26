@@ -32,12 +32,19 @@ typedef enum texec_structure_type {
   TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_PRIORITY         = 0x2001,
   TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_DEADLINE         = 0x2002,
   TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_TRACE_CONTEXT    = 0x2003,
+  TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_BACKPRESSURE     = 0x2004,
   
   TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_ALLOCATOR_INFO = 0x3001,
 
   TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_FULL_POLICY_INFO    = 0x4001,
   TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_ALLOCATOR_INFO      = 0x4002,
 } texec_structure_type_t;
+
+typedef enum texec_backpressure_policy {
+  TEXEC_BACKPRESSURE_REJECT = 0,
+  TEXEC_BACKPRESSURE_BLOCK,
+  TEXEC_BACKPRESSURE_CALLER_RUNS
+} texec_backpressure_policy_t;
 
 typedef void* (*texec_alloc_fn_t)(void* user, size_t size, size_t align);
 typedef void (*texec_free_fn_t)(void* user, void* ptr, size_t size, size_t align);

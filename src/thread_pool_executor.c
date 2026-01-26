@@ -14,7 +14,7 @@ typedef struct thread_pool_executor {
   texec_queue_t* q;
   thrd_t* threads;
   size_t thread_count;
-  texec_executor_backpressure_policy_t backpressure;
+  texec_backpressure_policy_t backpressure;
 } thread_pool_executor_t;
 
 static inline bool tp_is_thread_pool(const texec_executor_t* ex) {
@@ -100,7 +100,11 @@ static texec_status_t tp_start_workers(thread_pool_executor_t* ex) {
   return TEXEC_STATUS_OK;
 }
 
-static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex, texec_task_t task, const void* trace_context, texec_task_handle_t* h) {
+static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex,
+                                            texec_task_t task,
+                                            const void* trace_context,
+                                            texec_backpressure_policy_t backpressure,
+                                            texec_task_handle_t* h) {
   if (!ex || !h) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   if (tp_get_state(ex) != TEXEC_EXECUTOR_STATE_RUNNING) return TEXEC_STATUS_CLOSED;
@@ -114,12 +118,12 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex, texec_ta
 
   texec_status_t st = TEXEC_STATUS_INTERNAL_ERROR;
 
-  switch (ex->backpressure) {
-  case TEXEC_EXECUTOR_BACKPRESSURE_REJECT:
+  switch (backpressure) {
+  case TEXEC_BACKPRESSURE_REJECT:
     st = texec_queue_try_push_ptr(ex->q, wi);
     break;
     
-  case TEXEC_EXECUTOR_BACKPRESSURE_CALLER_RUNS:
+  case TEXEC_BACKPRESSURE_CALLER_RUNS:
     st = texec_queue_try_push_ptr(ex->q, wi);
     if (st == TEXEC_STATUS_REJECTED) {
       texec_executor_consume_work_item(ex, wi);
@@ -127,7 +131,7 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex, texec_ta
     }
     break;
 
-  case TEXEC_EXECUTOR_BACKPRESSURE_BLOCK:
+  case TEXEC_BACKPRESSURE_BLOCK:
     st = texec_queue_push_ptr(ex->q, wi);
     break;
   
@@ -179,7 +183,11 @@ static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_executor
 
   if (!info->task.fn) return TEXEC_STATUS_INVALID_ARGUMENT;
 
-  const void* trace_context = texec_executor_submit_get_trace_context(info);
+  const texec_executor_submit_backpressure_info_t* bpi = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_BACKPRESSURE);
+  const texec_backpressure_policy_t backpressure = (bpi ? bpi->backpressure : tp_ex->backpressure);
+
+  const texec_executor_submit_trace_context_info_t* tci = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_TRACE_CONTEXT);
+  const void* trace_context = tci ? tci->trace_context : NULL;
 
   texec_task_handle_t* h = texec_task_handle_create(tp_ex->base.alloc);
   if (!h) return TEXEC_STATUS_OUT_OF_MEMORY;
@@ -189,7 +197,7 @@ static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_executor
     return TEXEC_STATUS_INTERNAL_ERROR;
   }
 
-  texec_status_t st = tp_submit_with_handle(tp_ex, info->task, trace_context, h);
+  texec_status_t st = tp_submit_with_handle(tp_ex, info->task, trace_context, backpressure, h);
   if (st != TEXEC_STATUS_OK) {
     texec_task_handle_release(h);
     return st;
@@ -309,7 +317,7 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
   tp_ex->q = NULL;
   tp_ex->threads = NULL;
   tp_ex->thread_count = 0;
-  tp_ex->backpressure = cfg->backpressure_policy;
+  tp_ex->backpressure = cfg->backpressure;
 
   if (mtx_init(&tp_ex->mtx, mtx_plain) != thrd_success) {
     tp_free(tp_ex);
