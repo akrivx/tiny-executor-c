@@ -131,10 +131,11 @@ texec_status_t texec_task_group_add(texec_task_group_t* g, texec_task_handle_t* 
 
   if (g->closed) return task_group_unlock_return(g, TEXEC_STATUS_CLOSED);
 
-  texec_status_t st = task_group_ensure_capacity(g, g->count + 1);
-  if (st != TEXEC_STATUS_OK) return task_group_unlock_return(g, st);
+  if (!task_group_ensure_capacity(g, g->count + 1)) {
+    return task_group_unlock_return(g, TEXEC_STATUS_OUT_OF_MEMORY);
+  }
   
-  st = texec_task_handle_retain(h);
+  texec_status_t st = texec_task_handle_retain(h);
   if (st != TEXEC_STATUS_OK) return task_group_unlock_return(g, st);
 
   g->handles[g->count++] = h;
