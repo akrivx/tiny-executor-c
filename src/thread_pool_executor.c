@@ -59,7 +59,7 @@ static texec_status_t tp_destroy_unchecked(thread_pool_executor_t* ex) {
   mtx_destroy(&ex->mtx);
   
   tp_free(ex);
-  
+
   return TEXEC_STATUS_OK;
 }
 
@@ -105,18 +105,14 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex, texec_ta
 
   if (tp_get_state(ex) != TEXEC_EXECUTOR_STATE_RUNNING) return TEXEC_STATUS_CLOSED;
 
-  texec_status_t st = texec_task_handle_retain(h);
-  if (st != TEXEC_STATUS_OK) return st;
-
-  texec_work_item_t* wi = texec__executor_impl_alloc_work_item(ex);
-  if (!wi) {
-    texec_task_handle_release(h);
-    return TEXEC_STATUS_OUT_OF_MEMORY;
-  }
+  texec_work_item_t* wi = texec_work_item_allocate(ex->base.alloc);
+  if (!wi) return TEXEC_STATUS_OUT_OF_MEMORY;
 
   wi->task = task;
   wi->handle = h;
   wi->trace_context = trace_context;
+
+  texec_status_t st = TEXEC_STATUS_INTERNAL_ERROR;
 
   switch (ex->backpressure) {
   case TEXEC_EXECUTOR_BACKPRESSURE_REJECT:
@@ -137,7 +133,6 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex, texec_ta
   
   default:
     assert(false);
-    st = TEXEC_STATUS_INTERNAL_ERROR;
     break;
   }
 
@@ -188,6 +183,11 @@ static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_executor
 
   texec_task_handle_t* h = texec_task_handle_create(tp_ex->base.alloc);
   if (!h) return TEXEC_STATUS_OUT_OF_MEMORY;
+
+  if (texec_task_handle_retain(h) != TEXEC_STATUS_OK) {
+    texec_task_handle_destroy(h);
+    return TEXEC_STATUS_INTERNAL_ERROR;
+  }
 
   texec_status_t st = tp_submit_with_handle(tp_ex, info->task, trace_context, h);
   if (st != TEXEC_STATUS_OK) {
