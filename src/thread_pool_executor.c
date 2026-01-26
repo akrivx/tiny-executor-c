@@ -1,5 +1,6 @@
 #include "internal/executor.h"
 
+#include <assert.h>
 #include <stddef.h>
 #include <threads.h>
 
@@ -45,9 +46,10 @@ static void tp_free(thread_pool_executor_t* ex) {
   texec_free(ex->base.alloc, ex, sizeof(*ex), _Alignof(thread_pool_executor_t));
 }
 
-static void tp_destroy_unchecked(thread_pool_executor_t* ex) {  
+static texec_status_t tp_destroy_unchecked(thread_pool_executor_t* ex) {  
   if (ex->q) {
-    texec_queue_destroy(ex->q);
+    texec_status_t st = texec_queue_destroy(ex->q);
+    if (st != TEXEC_STATUS_OK) return st;
   }
 
   if (ex->threads) {
@@ -57,6 +59,8 @@ static void tp_destroy_unchecked(thread_pool_executor_t* ex) {
   mtx_destroy(&ex->mtx);
   
   tp_free(ex);
+  
+  return TEXEC_STATUS_OK;
 }
 
 static int tp_worker_main(void* arg) {
@@ -114,10 +118,30 @@ static texec_status_t tp_submit_with_handle(thread_pool_executor_t* ex, texec_ta
   wi->handle = h;
   wi->trace_context = trace_context;
 
-  st = texec_queue_push_ptr(ex->q, wi);
-  if (st == TEXEC_STATUS_REJECTED && ex->backpressure == TEXEC_EXECUTOR_BACKPRESSURE_CALLER_RUNS) {
-    texec_executor_consume_work_item(ex, wi);
-  } else if (st != TEXEC_STATUS_OK) {
+  switch (ex->backpressure) {
+  case TEXEC_EXECUTOR_BACKPRESSURE_REJECT:
+    st = texec_queue_try_push_ptr(ex->q, wi);
+    break;
+    
+  case TEXEC_EXECUTOR_BACKPRESSURE_CALLER_RUNS:
+    st = texec_queue_try_push_ptr(ex->q, wi);
+    if (st == TEXEC_STATUS_REJECTED) {
+      texec_executor_consume_work_item(ex, wi);
+      st = TEXEC_STATUS_OK;
+    }
+    break;
+
+  case TEXEC_EXECUTOR_BACKPRESSURE_BLOCK:
+    st = texec_queue_push_ptr(ex->q, wi);
+    break;
+  
+  default:
+    assert(false);
+    st = TEXEC_STATUS_INTERNAL_ERROR;
+    break;
+  }
+
+  if (st != TEXEC_STATUS_OK) {
     texec_work_item_destroy(wi, ex->base.alloc);
   }
 
@@ -227,8 +251,7 @@ static texec_status_t tp_vtbl_destroy(texec_executor_t* ex) {
   thread_pool_executor_t* tp_ex = tp_from_base(ex);
   if (!tp_ex) return TEXEC_STATUS_INVALID_ARGUMENT;
   if (tp_get_state(tp_ex) != TEXEC_EXECUTOR_STATE_CLOSED) return TEXEC_STATUS_BUSY;
-  tp_destroy_unchecked(tp_ex);
-  return TEXEC_STATUS_OK;
+  return tp_destroy_unchecked(tp_ex);
 }
 
 static texec_status_t tp_vtbl_query(const texec_executor_t* ex, texec_executor_capability_t cap, void* out_value) {
@@ -305,12 +328,8 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
     .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_ALLOCATOR_INFO, .next = NULL},
     .allocator = tp_ex->base.alloc,
   };
-  const texec_queue_create_full_policy_info_t qfpi = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_FULL_POLICY_INFO, .next = &qai},
-    .policy = (tp_ex->backpressure == TEXEC_EXECUTOR_BACKPRESSURE_BLOCK ? TEXEC_QUEUE_FULL_BLOCK : TEXEC_QUEUE_FULL_REJECT),
-  };
   const texec_queue_create_info_t qi = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO, .next = &qfpi},
+    .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO, .next = &qai},
     .capacity = cfg->queue_capacity,
   };
   texec_queue_t* q = NULL;
