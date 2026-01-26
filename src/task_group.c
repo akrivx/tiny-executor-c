@@ -11,14 +11,11 @@ static const float TASK_GROUP_EXPANSION_FACTOR = 1.5f;
 
 struct texec_task_group {
   mtx_t mtx;
-
   texec_task_handle_t** handles;
   size_t count;
   size_t capacity;
-
   texec_allocator_t* alloc;
-
-  bool sealed;
+  bool closed;
 };
 
 static inline const texec_task_group_create_allocator_info_t*
@@ -75,7 +72,7 @@ static inline texec_status_t task_group_init(texec_task_group_t* g, size_t capac
   g->count = 0;
   g->capacity = capacity;
   g->alloc = alloc;
-  g->sealed = false;
+  g->closed = false;
   return TEXEC_STATUS_OK;
 }
 
@@ -132,7 +129,7 @@ texec_status_t task_group_add(texec_task_group_t* g, texec_task_handle_t* h) {
 
   mtx_lock(&g->mtx);
 
-  if (g->sealed) return task_group_unlock_return(g, TEXEC_STATUS_INVALID_STATE);
+  if (g->closed) return task_group_unlock_return(g, TEXEC_STATUS_CLOSED);
 
   texec_status_t st = task_group_ensure_capacity(g, g->count + 1);
   if (st != TEXEC_STATUS_OK) return task_group_unlock_return(g, st);
@@ -151,7 +148,7 @@ texec_status_t task_group_wait(texec_task_group_t* g) {
 
   mtx_lock(&g->mtx);
 
-  g->sealed = true;
+  g->closed = true;
 
   texec_task_handle_t** handles = g->handles;
   const size_t count = g->count;
