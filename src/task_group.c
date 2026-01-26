@@ -124,7 +124,7 @@ void texec_task_group_destroy(texec_task_group_t* g) {
   texec_free(g->alloc, g, sizeof(*g), _Alignof(texec_task_group_t));
 }
 
-texec_status_t task_group_add(texec_task_group_t* g, texec_task_handle_t* h) {
+texec_status_t texec_task_group_add(texec_task_group_t* g, texec_task_handle_t* h) {
   if (!g || !h) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   mtx_lock(&g->mtx);
@@ -143,7 +143,7 @@ texec_status_t task_group_add(texec_task_group_t* g, texec_task_handle_t* h) {
   return TEXEC_STATUS_OK;
 }
 
-texec_status_t task_group_wait(texec_task_group_t* g) {
+texec_status_t texec_task_group_wait(texec_task_group_t* g) {
   if (!g) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   mtx_lock(&g->mtx);
