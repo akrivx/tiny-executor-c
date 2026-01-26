@@ -306,6 +306,7 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
     .submit_many = tp_vtbl_submit_many,
     .close = tp_vtbl_close,
     .join = tp_vtbl_join,
+    .destroy = tp_vtbl_destroy,
     .query = tp_vtbl_query,
   };
   
@@ -324,7 +325,7 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
     return TEXEC_STATUS_INTERNAL_ERROR;
   }
 
-  thrd_t* threads = texec_allocate(tp_ex->base.alloc, tp_ex->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
+  thrd_t* threads = texec_allocate(tp_ex->base.alloc, cfg->thread_count * sizeof(thrd_t), _Alignof(thrd_t));
   if (!threads) {
     tp_destroy_unchecked(tp_ex);
     return TEXEC_STATUS_OUT_OF_MEMORY;
