@@ -80,7 +80,7 @@ texec_status_t texec_task_group_create(const texec_task_group_create_info_t* inf
   if (!out_group) return TEXEC_STATUS_INVALID_ARGUMENT;
   *out_group = NULL;
 
-  if (!info || info->header.type != TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_INFO) {
+  if (!info || info->header.type != TEXEC_STRUCT_TYPE_TASK_GROUP_CREATE_INFO) {
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 

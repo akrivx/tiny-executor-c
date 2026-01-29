@@ -9,38 +9,38 @@
 extern "C" {
 #endif
 
-typedef struct texec_executor_submit_info {
+typedef struct texec_submit_info {
   texec_structure_header_t header;
   texec_task_t task;
-} texec_executor_submit_info_t;
+} texec_submit_info_t;
 
 // --- Submit Extensions ---
 
-typedef enum texec_executor_submit_priority {
-  TEXEC_EXECUTOR_SUBMIT_PRIORITY_LOW = -1,
-  TEXEC_EXECUTOR_SUBMIT_PRIORITY_NORMAL = 0,
-  TEXEC_EXECUTOR_SUBMIT_PRIORITY_HIGH = 1
-} texec_executor_submit_priority_t;
+typedef enum texec_submit_priority {
+  TEXEC_SUBMIT_PRIORITY_LOW = -1,
+  TEXEC_SUBMIT_PRIORITY_NORMAL = 0,
+  TEXEC_SUBMIT_PRIORITY_HIGH = 1
+} texec_submit_priority_t;
 
-typedef struct texec_executor_submit_priority_info {
+typedef struct texec_submit_priority_info {
   texec_structure_header_t header;
-  texec_executor_submit_priority_t priority;
-} texec_executor_submit_priority_info_t;
+  texec_submit_priority_t priority;
+} texec_submit_priority_info_t;
 
-typedef struct texec_executor_submit_deadline_info {
+typedef struct texec_submit_deadline_info {
   texec_structure_header_t header;
   uint64_t deadline_ns;
-} texec_executor_submit_deadline_info_t;
+} texec_submit_deadline_info_t;
 
-typedef struct texec_executor_submit_trace_context_info {
+typedef struct texec_submit_trace_context_info {
   texec_structure_header_t header;
   const void* trace_context;
-} texec_executor_submit_trace_context_info_t;
+} texec_submit_trace_context_info_t;
 
-typedef struct texec_executor_submit_backpressure_info {
+typedef struct texec_submit_backpressure_info {
   texec_structure_header_t header;
   texec_backpressure_policy_t backpressure;
-} texec_executor_submit_backpressure_info_t;
+} texec_submit_backpressure_info_t;
 
 #ifdef __cplusplus
 }

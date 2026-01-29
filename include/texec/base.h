@@ -18,23 +18,23 @@ typedef enum texec_status {
   TEXEC_STATUS_INTERNAL_ERROR
 } texec_status_t;
 
-typedef enum texec_structure_type {
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_INFO             = 0x1000,
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_INFO             = 0x2000,
-  TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_INFO           = 0x3000,
-  TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO                = 0x4000,
+typedef enum texec_struct_type {
+  TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_INFO             = 0x1000,
+  TEXEC_STRUCT_TYPE_SUBMIT_INFO                      = 0x2000,
+  TEXEC_STRUCT_TYPE_TASK_GROUP_CREATE_INFO           = 0x3000,
+  TEXEC_STRUCT_TYPE_QUEUE_CREATE_INFO                = 0x4000,
   
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_INLINE_INFO      = 0x1001,
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO = 0x1002,
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_DIAGNOSTICS_INFO = 0x1003,
+  TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_INLINE_INFO      = 0x1001,
+  TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO = 0x1002,
+  TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_DIAGNOSTICS_INFO = 0x1003,
   
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_PRIORITY         = 0x2001,
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_DEADLINE         = 0x2002,
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_TRACE_CONTEXT    = 0x2003,
-  TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_BACKPRESSURE     = 0x2004,
+  TEXEC_STRUCT_TYPE_SUBMIT_PRIORITY                  = 0x2001,
+  TEXEC_STRUCT_TYPE_SUBMIT_DEADLINE                  = 0x2002,
+  TEXEC_STRUCT_TYPE_SUBMIT_TRACE_CONTEXT             = 0x2003,
+  TEXEC_STRUCT_TYPE_SUBMIT_BACKPRESSURE              = 0x2004,
   
-  TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_FULL_POLICY_INFO    = 0x4001,
-} texec_structure_type_t;
+  TEXEC_STRUCT_TYPE_QUEUE_CREATE_FULL_POLICY_INFO    = 0x4001,
+} texec_struct_type_t;
 
 typedef enum texec_backpressure_policy {
   TEXEC_BACKPRESSURE_REJECT = 0,
@@ -54,11 +54,11 @@ typedef struct texec_allocator {
 void texec_set_default_allocator(const texec_allocator_t* allocator);
 
 typedef struct texec_structure_header {
-  texec_structure_type_t type;
+  texec_struct_type_t type;
   const void* next;
 } texec_structure_header_t;
 
-static inline const void* texec_structure_find(const void* first, texec_structure_type_t type) {
+static inline const void* texec_structure_find(const void* first, texec_struct_type_t type) {
   const texec_structure_header_t* it = (const texec_structure_header_t*)first;
   while (it && it->type != type) {
     it = (const texec_structure_header_t*)it->next;

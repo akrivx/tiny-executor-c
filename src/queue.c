@@ -141,7 +141,7 @@ texec_status_t texec_queue_create(const texec_queue_create_info_t* info, const t
 
   *out_q = NULL;
 
-  if (!info || info->header.type != TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO || info->capacity == 0) {
+  if (!info || info->header.type != TEXEC_STRUCT_TYPE_QUEUE_CREATE_INFO || info->capacity == 0) {
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
@@ -176,6 +176,8 @@ texec_status_t texec_queue_destroy(texec_queue_t* q) {
 
   texec_free(q->alloc, q->buf, q->capacity * sizeof(uintptr_t), _Alignof(uintptr_t));
   texec_free(q->alloc, q, sizeof(*q), _Alignof(texec_queue_t));
+
+  return TEXEC_STATUS_OK;
 }
 
 void texec_queue_close(texec_queue_t* q) {

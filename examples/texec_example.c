@@ -10,14 +10,14 @@ static int hello_task(void* user) {
 
 int main(void) {
   const texec_executor_create_thread_pool_info_t tpci = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO, .next = NULL},
+    .header = {.type = TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO, .next = NULL},
     .thread_count = 2,
     .queue_capacity = 32,
     .backpressure = TEXEC_BACKPRESSURE_BLOCK,
   };
 
   const texec_executor_create_info_t eci = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_INFO, .next = &tpci},
+    .header = {.type = TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_INFO, .next = &tpci},
     .kind = TEXEC_EXECUTOR_KIND_THREAD_POOL,
   };
 
@@ -29,10 +29,10 @@ int main(void) {
     return 1;
   }
 
-  const texec_executor_submit_info_t submit = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_INFO, .next = NULL},
+  const texec_submit_info_t submit = {
+    .header = {.type = TEXEC_STRUCT_TYPE_SUBMIT_INFO, .next = NULL},
     .task = {
-      .fn = hello_task,
+      .run = hello_task,
       .ctx = "work item",
     },
   };

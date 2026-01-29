@@ -3,7 +3,7 @@
 #include <stddef.h>
 
 #include "texec/base.h"
-#include "texec/task.h"
+#include "texec/diagnostics.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,21 +28,9 @@ typedef struct texec_executor_create_thread_pool_info {
   texec_backpressure_policy_t backpressure;
 } texec_executor_create_thread_pool_info_t;
 
-struct texec_executor_submit_info;
-typedef void (*texec_executor_on_submit_fn_t)(void* user, const struct texec_executor_submit_info* submit_info);
-typedef void (*texec_executor_on_task_begin_fn_t)(void* user, const texec_task_t* task, const void* trace_context);
-typedef void (*texec_executor_on_task_end_fn_t)(void* user, const texec_task_t* task, const void* trace_context, int task_result);
-
-typedef struct texec_executor_diagnostics {
-  void* user;
-  texec_executor_on_submit_fn_t on_submit;
-  texec_executor_on_task_begin_fn_t on_task_begin;
-  texec_executor_on_task_end_fn_t on_task_end;
-} texec_executor_diagnostics_t;
-
 typedef struct texec_executor_create_diagnostics_info {
   texec_structure_header_t header;
-  const texec_executor_diagnostics_t* diag;
+  const texec_diagnostics_t* diag;
 } texec_executor_create_diagnostics_info_t;
 
 #ifdef __cplusplus
