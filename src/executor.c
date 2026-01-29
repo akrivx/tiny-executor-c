@@ -19,7 +19,7 @@ find_executor_diag_info(const texec_executor_create_info_t* info) {
 }
 
 static inline texec_status_t executor_create_thread_pool(const texec_allocator_t* alloc,
-                                                         const texec_executor_diagnostics_t* diag,
+                                                         const texec_diagnostics_t* diag,
                                                          const texec_executor_create_info_t* info,
                                                          texec_executor_t** out_ex) {
   const texec_executor_create_thread_pool_info_t* tp_info = find_executor_thread_pool_create_info(info);
@@ -58,7 +58,7 @@ texec_status_t texec_executor_create(const texec_executor_create_info_t* info, c
   }
 
   const texec_executor_create_diagnostics_info_t* diag_info = find_executor_diag_info(info);  
-  const texec_executor_diagnostics_t* diag = diag_info ? diag_info->diag : NULL;
+  const texec_diagnostics_t* diag = diag_info ? diag_info->diag : NULL;
   
   if (!alloc) {
     alloc = texec_get_default_allocator();

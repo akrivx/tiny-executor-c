@@ -30,7 +30,7 @@ typedef struct texec_executor_create_thread_pool_info {
 
 typedef struct texec_executor_create_diagnostics_info {
   texec_structure_header_t header;
-  const texec_executor_diagnostics_t* diag;
+  const texec_diagnostics_t* diag;
 } texec_executor_create_diagnostics_info_t;
 
 #ifdef __cplusplus
