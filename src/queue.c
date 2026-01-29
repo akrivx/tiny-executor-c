@@ -141,7 +141,7 @@ texec_status_t texec_queue_create(const texec_queue_create_info_t* info, const t
 
   *out_q = NULL;
 
-  if (!info || info->header.type != TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO || info->capacity == 0) {
+  if (!info || info->header.type != TEXEC_STRUCT_TYPE_QUEUE_CREATE_INFO || info->capacity == 0) {
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 

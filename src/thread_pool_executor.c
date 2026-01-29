@@ -177,16 +177,16 @@ static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_submit_i
   thread_pool_executor_t* tp_ex = tp_from_base(ex);
   if (!tp_ex) return TEXEC_STATUS_INVALID_ARGUMENT;
 
-  if (!info || info->header.type != TEXEC_STRUCTURE_TYPE_SUBMIT_INFO) {
+  if (!info || info->header.type != TEXEC_STRUCT_TYPE_SUBMIT_INFO) {
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
   if (!info->task.fn) return TEXEC_STATUS_INVALID_ARGUMENT;
 
-  const texec_submit_backpressure_info_t* bpi = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_SUBMIT_BACKPRESSURE);
+  const texec_submit_backpressure_info_t* bpi = texec_structure_find(info->header.next, TEXEC_STRUCT_TYPE_SUBMIT_BACKPRESSURE);
   const texec_backpressure_policy_t backpressure = (bpi ? bpi->backpressure : tp_ex->backpressure);
 
-  const texec_submit_trace_context_info_t* tci = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_SUBMIT_TRACE_CONTEXT);
+  const texec_submit_trace_context_info_t* tci = texec_structure_find(info->header.next, TEXEC_STRUCT_TYPE_SUBMIT_TRACE_CONTEXT);
   const void* trace_context = tci ? tci->trace_context : NULL;
 
   texec_task_handle_t* h = texec_task_handle_create(tp_ex->base.alloc);
@@ -214,7 +214,7 @@ static texec_status_t tp_vtbl_submit_many(texec_executor_t* ex, const texec_subm
   if (!tp_is_thread_pool(ex)) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   const texec_task_group_create_info_t gi = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_INFO, .next = NULL},
+    .header = {.type = TEXEC_STRUCT_TYPE_TASK_GROUP_CREATE_INFO, .next = NULL},
     .capacity = count,
   };
 
@@ -330,7 +330,7 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
   tp_ex->thread_count = cfg->thread_count;
 
   const texec_queue_create_info_t qi = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO, .next = NULL},
+    .header = {.type = TEXEC_STRUCT_TYPE_QUEUE_CREATE_INFO, .next = NULL},
     .capacity = cfg->queue_capacity,
   };
   texec_queue_t* q = NULL;

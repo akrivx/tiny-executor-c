@@ -10,12 +10,12 @@ static const size_t TP_EXECUTOR_DEFAULT_QUEUE_CAPACITY = 1024;
 
 static inline const texec_executor_create_thread_pool_info_t*
 find_executor_thread_pool_create_info(const texec_executor_create_info_t* info) {
-  return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO);
+  return texec_structure_find(info->header.next, TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO);
 }
 
 static inline const texec_executor_create_diagnostics_info_t*
 find_executor_diag_info(const texec_executor_create_info_t* info) {
-  return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_DIAGNOSTICS_INFO);
+  return texec_structure_find(info->header.next, TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_DIAGNOSTICS_INFO);
 }
 
 static inline texec_status_t executor_create_thread_pool(const texec_allocator_t* alloc,
@@ -53,7 +53,7 @@ texec_status_t texec_executor_create(const texec_executor_create_info_t* info, c
   if (!out_executor) return TEXEC_STATUS_INVALID_ARGUMENT;
   *out_executor = NULL;
 
-  if (!info || info->header.type != TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_INFO) {
+  if (!info || info->header.type != TEXEC_STRUCT_TYPE_EXECUTOR_CREATE_INFO) {
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
