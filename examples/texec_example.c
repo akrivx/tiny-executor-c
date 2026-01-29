@@ -42,8 +42,6 @@ int main(void) {
 
   int ret = 0;
   if (st == TEXEC_STATUS_OK) {
-    texec_task_handle_wait(handle);
-
     int result = -1;
     st = texec_task_handle_result(handle, &result);
     if (st == TEXEC_STATUS_OK) {

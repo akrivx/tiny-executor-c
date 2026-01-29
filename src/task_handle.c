@@ -108,30 +108,30 @@ void texec_task_handle_release(texec_task_handle_t* h) {
   }
 }
 
-void texec_task_handle_wait(texec_task_handle_t* h) {
-  if (!h) return;
-
+texec_status_t texec_task_handle_result(texec_task_handle_t* h, int* out_result) {
+  if (!h || !out_result) return TEXEC_STATUS_INVALID_ARGUMENT;
   mtx_lock(&h->mtx);
   while (!h->done) {
     cnd_wait(&h->cv, &h->mtx);
   }
+  *out_result = h->result;
   mtx_unlock(&h->mtx);
+  return TEXEC_STATUS_OK;
 }
 
-bool texec_task_handle_is_done(texec_task_handle_t* h) {
-  if (!h) return false;
-
-  mtx_lock(&h->mtx);
-  const bool done = h->done;
-  mtx_unlock(&h->mtx);
-  return done;
-}
-
-texec_status_t texec_task_handle_result(texec_task_handle_t* h, int* out_result) {
+texec_status_t texec_task_handle_try_result(texec_task_handle_t* h, int* out_result) {
   if (!h || !out_result) return TEXEC_STATUS_INVALID_ARGUMENT;
   mtx_lock(&h->mtx);
   if (!h->done) return task_handle_unlock_return(h, TEXEC_STATUS_NOT_READY);
   *out_result = h->result;
   mtx_unlock(&h->mtx);
   return TEXEC_STATUS_OK;
+}
+
+bool texec_task_handle_is_done(texec_task_handle_t* h) {
+  if (!h) return false;
+  mtx_lock(&h->mtx);
+  const bool done = h->done;
+  mtx_unlock(&h->mtx);
+  return done;
 }
