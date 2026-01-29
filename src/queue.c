@@ -176,6 +176,8 @@ texec_status_t texec_queue_destroy(texec_queue_t* q) {
 
   texec_free(q->alloc, q->buf, q->capacity * sizeof(uintptr_t), _Alignof(uintptr_t));
   texec_free(q->alloc, q, sizeof(*q), _Alignof(texec_queue_t));
+
+  return TEXEC_STATUS_OK;
 }
 
 void texec_queue_close(texec_queue_t* q) {
