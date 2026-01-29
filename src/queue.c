@@ -22,10 +22,6 @@ struct texec_queue {
   bool closed;
 };
 
-static inline const texec_queue_create_allocator_info_t* find_queue_alloc_info(const texec_queue_create_info_t* info) {
-  return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_ALLOCATOR_INFO);
-}
-
 static inline bool queue_init_cnds(texec_queue_t* q) {
   if (cnd_init(&q->not_empty) != thrd_success) return false;
 
@@ -140,7 +136,7 @@ static inline texec_status_t queue_pop_impl(texec_queue_t* q, uintptr_t* out_ite
   return TEXEC_STATUS_OK;
 }
 
-texec_status_t texec_queue_create(const texec_queue_create_info_t* info, texec_queue_t** out_q) {
+texec_status_t texec_queue_create(const texec_queue_create_info_t* info, const texec_allocator_t* alloc, texec_queue_t** out_q) {
   if (!out_q) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   *out_q = NULL;
@@ -149,9 +145,9 @@ texec_status_t texec_queue_create(const texec_queue_create_info_t* info, texec_q
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
-  const texec_queue_create_allocator_info_t* alloc_info = find_queue_alloc_info(info);
-  if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
-  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec_get_default_allocator();
+  if (!alloc) {
+    alloc = texec_get_default_allocator();
+  }
 
   texec_queue_t* q = texec_allocate(alloc, sizeof(*q), _Alignof(texec_queue_t));
   if (!q) return TEXEC_STATUS_OUT_OF_MEMORY;

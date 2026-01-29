@@ -22,7 +22,7 @@ int main(void) {
   };
 
   texec_executor_t* ex = NULL;
-  texec_status_t st = texec_executor_create(&eci, &ex);
+  texec_status_t st = texec_executor_create(&eci, NULL, &ex);
 
   if (st != TEXEC_STATUS_OK) {
     fprintf(stderr, "failed to create executor: %d\n", (int)st);

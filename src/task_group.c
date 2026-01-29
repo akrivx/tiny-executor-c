@@ -18,11 +18,6 @@ struct texec_task_group {
   bool closed;
 };
 
-static inline const texec_task_group_create_allocator_info_t*
-find_group_alloc_info(const texec_task_group_create_info_t* info) {
-  return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_ALLOCATOR_INFO);
-}
-
 static inline texec_task_handle_t** alloc_task_handles(const texec_allocator_t* alloc, size_t n) {
   return texec_allocate(alloc, n * sizeof(texec_task_handle_t*), _Alignof(texec_task_handle_t*));
 }
@@ -81,7 +76,7 @@ static inline texec_status_t task_group_unlock_return(texec_task_group_t* g, tex
   return st;
 }
 
-texec_status_t texec_task_group_create(const texec_task_group_create_info_t* info, texec_task_group_t** out_group) {
+texec_status_t texec_task_group_create(const texec_task_group_create_info_t* info, const texec_allocator_t* alloc, texec_task_group_t** out_group) {
   if (!out_group) return TEXEC_STATUS_INVALID_ARGUMENT;
   *out_group = NULL;
 
@@ -89,9 +84,9 @@ texec_status_t texec_task_group_create(const texec_task_group_create_info_t* inf
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
-  const texec_task_group_create_allocator_info_t* alloc_info = find_group_alloc_info(info);
-  if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
-  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec_get_default_allocator();
+  if (!alloc) {
+    alloc = texec_get_default_allocator();
+  }
 
   texec_task_group_t* g = texec_allocate(alloc, sizeof(*g), _Alignof(texec_task_group_t));
   if (!g) return TEXEC_STATUS_OUT_OF_MEMORY;
