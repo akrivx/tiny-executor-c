@@ -9,7 +9,7 @@ static int hello_task(void* user) {
 }
 
 int main(void) {
-  const texec_executor_thread_pool_create_info_t tpci = {
+  const texec_executor_create_thread_pool_info_t tpci = {
     .header = {.type = TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO, .next = NULL},
     .thread_count = 2,
     .queue_capacity = 32,

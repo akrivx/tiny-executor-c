@@ -8,7 +8,7 @@
 static const size_t TP_EXECUTOR_DEFAULT_THREAD_COUNT = 1;
 static const size_t TP_EXECUTOR_DEFAULT_QUEUE_CAPACITY = 1024;
 
-static inline const texec_executor_thread_pool_create_info_t*
+static inline const texec_executor_create_thread_pool_info_t*
 find_executor_thread_pool_create_info(const texec_executor_create_info_t* info) {
   return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO);
 }
@@ -22,7 +22,7 @@ static inline texec_status_t executor_create_thread_pool(const texec_allocator_t
                                                          const texec_executor_diagnostics_t* diag,
                                                          const texec_executor_create_info_t* info,
                                                          texec_executor_t** out_ex) {
-  const texec_executor_thread_pool_create_info_t* tp_info = find_executor_thread_pool_create_info(info);
+  const texec_executor_create_thread_pool_info_t* tp_info = find_executor_thread_pool_create_info(info);
   if (!tp_info) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   const texec_thread_pool_executor_config_t cfg = {
