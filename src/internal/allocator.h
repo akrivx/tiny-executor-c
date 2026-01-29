@@ -5,7 +5,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif __cplusplus
+#endif
 
 const texec_allocator_t* texec_get_default_allocator(void);
 
@@ -19,4 +19,4 @@ static inline void texec_free(const texec_allocator_t* allocator, void* ptr, siz
 
 #ifdef __cplusplus
 }
-#endif __cplusplus
+#endif
