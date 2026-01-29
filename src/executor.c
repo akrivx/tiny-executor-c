@@ -13,11 +13,6 @@ find_executor_thread_pool_info(const texec_executor_create_info_t* info) {
   return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_THREAD_POOL_INFO);
 }
 
-static inline const texec_executor_create_allocator_info_t*
-find_executor_alloc_info(const texec_executor_create_info_t* info) {
-  return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_ALLOCATOR_INFO);
-}
-
 static inline const texec_executor_create_diagnostics_info_t*
 find_executor_diag_info(const texec_executor_create_info_t* info) {
   return texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_CREATE_DIAGNOSTICS_INFO);
@@ -54,7 +49,7 @@ static inline bool executor_validate(const texec_executor_t* ex) {
     && ex->state == TEXEC_EXECUTOR_STATE_RUNNING;
 }
 
-texec_status_t texec_executor_create(const texec_executor_create_info_t* info, texec_executor_t** out_executor) {
+texec_status_t texec_executor_create(const texec_executor_create_info_t* info, const texec_allocator_t* alloc, texec_executor_t** out_executor) {
   if (!out_executor) return TEXEC_STATUS_INVALID_ARGUMENT;
   *out_executor = NULL;
 
@@ -62,12 +57,12 @@ texec_status_t texec_executor_create(const texec_executor_create_info_t* info, t
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
-  const texec_executor_create_diagnostics_info_t* diag_info = find_executor_diag_info(info);
-  const texec_executor_create_allocator_info_t* alloc_info = find_executor_alloc_info(info);
-  if (alloc_info && !alloc_info->allocator) return TEXEC_STATUS_INVALID_ARGUMENT;
-  
+  const texec_executor_create_diagnostics_info_t* diag_info = find_executor_diag_info(info);  
   const texec_executor_diagnostics_t* diag = diag_info ? diag_info->diag : NULL;
-  const texec_allocator_t* alloc = alloc_info ? alloc_info->allocator : texec_get_default_allocator();
+  
+  if (!alloc) {
+    alloc = texec_get_default_allocator();
+  } 
 
   texec_status_t st = TEXEC_STATUS_UNSUPPORTED;
   switch (info->kind) {

@@ -213,17 +213,13 @@ static texec_status_t tp_vtbl_submit_many(texec_executor_t* ex, const texec_exec
 
   if (!tp_is_thread_pool(ex)) return TEXEC_STATUS_INVALID_ARGUMENT;
 
-  const texec_task_group_create_allocator_info_t gai = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_ALLOCATOR_INFO, .next = NULL},
-    .allocator = ex->alloc,
-  };
   const texec_task_group_create_info_t gi = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_INFO, .next = &gai},
+    .header = {.type = TEXEC_STRUCTURE_TYPE_TASK_GROUP_CREATE_INFO, .next = NULL},
     .capacity = count,
   };
 
   texec_task_group_t* g = NULL;
-  texec_status_t st = texec_task_group_create(&gi, &g);
+  texec_status_t st = texec_task_group_create(&gi, ex->alloc, &g);
   if (st != TEXEC_STATUS_OK) return st;
 
   for (size_t i = 0; i < count; ++i) {
@@ -333,16 +329,12 @@ texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executo
   tp_ex->threads = threads;
   tp_ex->thread_count = cfg->thread_count;
 
-  const texec_queue_create_allocator_info_t qai = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_ALLOCATOR_INFO, .next = NULL},
-    .allocator = tp_ex->base.alloc,
-  };
   const texec_queue_create_info_t qi = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO, .next = &qai},
+    .header = {.type = TEXEC_STRUCTURE_TYPE_QUEUE_CREATE_INFO, .next = NULL},
     .capacity = cfg->queue_capacity,
   };
   texec_queue_t* q = NULL;
-  texec_status_t st = texec_queue_create(&qi, &q);
+  texec_status_t st = texec_queue_create(&qi, tp_ex->base.alloc, &q);
   if (st != TEXEC_STATUS_OK) {
     tp_destroy_unchecked(tp_ex);
     return st;

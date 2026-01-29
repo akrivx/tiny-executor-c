@@ -28,11 +28,6 @@ typedef struct texec_executor_create_thread_pool_info {
   texec_backpressure_policy_t backpressure;
 } texec_executor_create_thread_pool_info_t;
 
-typedef struct texec_executor_create_allocator_info {
-  texec_structure_header_t header;
-  const texec_allocator_t* allocator;
-} texec_executor_create_allocator_info_t;
-
 struct texec_executor_submit_info;
 typedef void (*texec_executor_on_submit_fn_t)(void* user, const struct texec_executor_submit_info* submit_info);
 typedef void (*texec_executor_on_task_begin_fn_t)(void* user, const texec_task_t* task, const void* trace_context);

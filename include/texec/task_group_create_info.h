@@ -15,11 +15,6 @@ typedef struct texec_task_group_create_info {
 
 // --- Task Group Create Extensions ---
 
-typedef struct texec_task_group_create_allocator_info {
-  texec_structure_header_t header;
-  const texec_allocator_t* allocator;
-} texec_task_group_create_allocator_info_t;
-
 #ifdef __cplusplus
 }
 #endif
