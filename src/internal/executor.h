@@ -5,6 +5,7 @@
 #include "texec/task_handle.h"
 
 #include "internal/allocator.h"
+#include "internal/diagnostics.h"
 #include "internal/task_handle.h"
 #include "internal/work_item.h"
 
@@ -48,26 +49,14 @@ typedef struct texec_thread_pool_executor_config {
 
 texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executor_config_t* cfg, texec_executor_t** out_ex);
 
-static inline void texec_executor_diagnostics_on_submit(const texec_diagnostics_t* diag, const struct texec_submit_info_t* submit_info) {
-  if (diag) diag->on_submit(diag->user, submit_info);
-}
-
-static inline void texec_executor_diagnostics_on_task_begin(const texec_diagnostics_t* diag, const texec_task_t* task, const void* trace_context) {
-  if (diag) diag->on_task_begin(diag->user, task, trace_context);
-}
-
-static inline void texec_executor_diagnostics_on_task_end(const texec_diagnostics_t* diag, const texec_task_t* task, const void* trace_context, int task_result) {
-  if (diag) diag->on_task_end(diag->user, task, trace_context, task_result);
-}
-
 static inline void texec_task_cleanup(const texec_task_t* t) {
   if (t->cleanup) t->cleanup(t->ctx);
 }
 
 static inline void texec_executor_consume_work_item(const texec_executor_t* ex, texec_work_item_t* wi) {
-  texec_executor_diagnostics_on_task_begin(ex->diag, &wi->task, wi->trace_context);
+  texec_diagnostics_on_task_begin(ex->diag, &wi->task, wi->trace_context);
   const int result = wi->task.fn(wi->task.ctx);
-  texec_executor_diagnostics_on_task_end(ex->diag, &wi->task, wi->trace_context, result);
+  texec_diagnostics_on_task_end(ex->diag, &wi->task, wi->trace_context, result);
   texec_task_cleanup(&wi->task);
   texec_task_handle_complete(wi->handle, result);
   texec_work_item_destroy(wi, ex->alloc);
