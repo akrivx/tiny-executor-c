@@ -181,7 +181,7 @@ static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_submit_i
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
-  if (!info->task.fn) return TEXEC_STATUS_INVALID_ARGUMENT;
+  if (!info->task.run) return TEXEC_STATUS_INVALID_ARGUMENT;
 
   const texec_submit_backpressure_info_t* bpi = texec_structure_find(info->header.next, TEXEC_STRUCT_TYPE_SUBMIT_BACKPRESSURE);
   const texec_backpressure_policy_t backpressure = (bpi ? bpi->backpressure : tp_ex->backpressure);

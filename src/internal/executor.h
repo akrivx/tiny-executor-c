@@ -49,15 +49,16 @@ typedef struct texec_thread_pool_executor_config {
 
 texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executor_config_t* cfg, texec_executor_t** out_ex);
 
-static inline void texec_task_cleanup(const texec_task_t* t) {
-  if (t->cleanup) t->cleanup(t->ctx);
+static inline void texec_task_on_complete(const texec_task_t* t) {
+  if (!t->on_complete) return;
+  t->on_complete(t->ctx);
 }
 
 static inline void texec_executor_consume_work_item(const texec_executor_t* ex, texec_work_item_t* wi) {
   texec_diagnostics_on_task_begin(ex->diag, &wi->task, wi->trace_context);
-  const int result = wi->task.fn(wi->task.ctx);
+  const int result = wi->task.run(wi->task.ctx);
   texec_diagnostics_on_task_end(ex->diag, &wi->task, wi->trace_context, result);
-  texec_task_cleanup(&wi->task);
+  texec_task_on_complete(&wi->task);
   texec_task_handle_complete(wi->handle, result);
   texec_work_item_destroy(wi, ex->alloc);
 }

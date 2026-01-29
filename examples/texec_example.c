@@ -32,7 +32,7 @@ int main(void) {
   const texec_submit_info_t submit = {
     .header = {.type = TEXEC_STRUCT_TYPE_SUBMIT_INFO, .next = NULL},
     .task = {
-      .fn = hello_task,
+      .run = hello_task,
       .ctx = "work item",
     },
   };
