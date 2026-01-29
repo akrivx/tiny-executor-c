@@ -44,6 +44,19 @@ static inline texec_status_t task_handle_unlock_return(texec_task_handle_t* h, t
   return st;
 }
 
+static inline texec_status_t task_handle_get_result(texec_task_handle_t* h, int* out_result, bool block)
+{
+  if (!h || !out_result) return TEXEC_STATUS_INVALID_ARGUMENT;
+  mtx_lock(&h->mtx);
+  while (!h->done) {
+    if (!block) return task_handle_unlock_return(h, TEXEC_STATUS_NOT_READY);
+    cnd_wait(&h->cv, &h->mtx);
+  }
+  *out_result = h->result;
+  mtx_unlock(&h->mtx);
+  return TEXEC_STATUS_OK;
+}
+
 texec_task_handle_t* texec_task_handle_create(const texec_allocator_t* alloc) {
   texec_task_handle_t* h = texec_allocate(alloc, sizeof(*h), _Alignof(texec_task_handle_t));
   if (!task_handle_init(h, alloc)) {
@@ -109,23 +122,11 @@ void texec_task_handle_release(texec_task_handle_t* h) {
 }
 
 texec_status_t texec_task_handle_result(texec_task_handle_t* h, int* out_result) {
-  if (!h || !out_result) return TEXEC_STATUS_INVALID_ARGUMENT;
-  mtx_lock(&h->mtx);
-  while (!h->done) {
-    cnd_wait(&h->cv, &h->mtx);
-  }
-  *out_result = h->result;
-  mtx_unlock(&h->mtx);
-  return TEXEC_STATUS_OK;
+  return task_handle_get_result(h, out_result, true);
 }
 
 texec_status_t texec_task_handle_try_result(texec_task_handle_t* h, int* out_result) {
-  if (!h || !out_result) return TEXEC_STATUS_INVALID_ARGUMENT;
-  mtx_lock(&h->mtx);
-  if (!h->done) return task_handle_unlock_return(h, TEXEC_STATUS_NOT_READY);
-  *out_result = h->result;
-  mtx_unlock(&h->mtx);
-  return TEXEC_STATUS_OK;
+  return task_handle_get_result(h, out_result, false);
 }
 
 bool texec_task_handle_is_done(texec_task_handle_t* h) {
