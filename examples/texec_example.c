@@ -29,8 +29,8 @@ int main(void) {
     return 1;
   }
 
-  const texec_executor_submit_info_t submit = {
-    .header = {.type = TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_INFO, .next = NULL},
+  const texec_submit_info_t submit = {
+    .header = {.type = TEXEC_STRUCTURE_TYPE_SUBMIT_INFO, .next = NULL},
     .task = {
       .fn = hello_task,
       .ctx = "work item",

@@ -14,8 +14,8 @@ typedef enum texec_executor_state {
   TEXEC_EXECUTOR_STATE_CLOSED,
 } texec_executor_state_t;
 
-typedef texec_status_t (*texec_executor_submit_fn_t)(texec_executor_t* ex,  const texec_executor_submit_info_t* info, texec_task_handle_t** out_handle);
-typedef texec_status_t (*texec_executor_submit_many_fn_t)(texec_executor_t* ex, const texec_executor_submit_info_t* infos, size_t count, texec_task_group_t** out_group);
+typedef texec_status_t (*texec_executor_submit_fn_t)(texec_executor_t* ex,  const texec_submit_info_t* info, texec_task_handle_t** out_handle);
+typedef texec_status_t (*texec_executor_submit_many_fn_t)(texec_executor_t* ex, const texec_submit_info_t* infos, size_t count, texec_task_group_t** out_group);
 typedef void (*texec_executor_close_fn_t)(texec_executor_t* ex);
 typedef void (*texec_executor_join_fn_t)(texec_executor_t* ex);
 typedef texec_status_t (*texec_executor_destroy_fn_t)(texec_executor_t* ex);
@@ -48,7 +48,7 @@ typedef struct texec_thread_pool_executor_config {
 
 texec_status_t texec_executor_create_thread_pool(const texec_thread_pool_executor_config_t* cfg, texec_executor_t** out_ex);
 
-static inline void texec_executor_diagnostics_on_submit(const texec_diagnostics_t* diag, const struct texec_executor_submit_info* submit_info) {
+static inline void texec_executor_diagnostics_on_submit(const texec_diagnostics_t* diag, const struct texec_submit_info_t* submit_info) {
   if (diag) diag->on_submit(diag->user, submit_info);
 }
 

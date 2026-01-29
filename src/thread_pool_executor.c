@@ -170,23 +170,23 @@ static void tp_join(thread_pool_executor_t* ex) {
   mtx_unlock(&ex->mtx);
 }
 
-static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_executor_submit_info_t* info, texec_task_handle_t** out_handle) {
+static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_submit_info_t* info, texec_task_handle_t** out_handle) {
   if (!out_handle) return TEXEC_STATUS_INVALID_ARGUMENT;
   *out_handle = NULL;
   
   thread_pool_executor_t* tp_ex = tp_from_base(ex);
   if (!tp_ex) return TEXEC_STATUS_INVALID_ARGUMENT;
 
-  if (!info || info->header.type != TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_INFO) {
+  if (!info || info->header.type != TEXEC_STRUCTURE_TYPE_SUBMIT_INFO) {
     return TEXEC_STATUS_INVALID_ARGUMENT;
   }
 
   if (!info->task.fn) return TEXEC_STATUS_INVALID_ARGUMENT;
 
-  const texec_executor_submit_backpressure_info_t* bpi = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_BACKPRESSURE);
+  const texec_submit_backpressure_info_t* bpi = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_SUBMIT_BACKPRESSURE);
   const texec_backpressure_policy_t backpressure = (bpi ? bpi->backpressure : tp_ex->backpressure);
 
-  const texec_executor_submit_trace_context_info_t* tci = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_EXECUTOR_SUBMIT_TRACE_CONTEXT);
+  const texec_submit_trace_context_info_t* tci = texec_structure_find(info->header.next, TEXEC_STRUCTURE_TYPE_SUBMIT_TRACE_CONTEXT);
   const void* trace_context = tci ? tci->trace_context : NULL;
 
   texec_task_handle_t* h = texec_task_handle_create(tp_ex->base.alloc);
@@ -207,7 +207,7 @@ static texec_status_t tp_vtbl_submit(texec_executor_t* ex,  const texec_executor
   return st;
 }
 
-static texec_status_t tp_vtbl_submit_many(texec_executor_t* ex, const texec_executor_submit_info_t* infos, size_t count, texec_task_group_t** out_group) {
+static texec_status_t tp_vtbl_submit_many(texec_executor_t* ex, const texec_submit_info_t* infos, size_t count, texec_task_group_t** out_group) {
   if (!out_group) return TEXEC_STATUS_INVALID_ARGUMENT;
   *out_group = NULL;
 

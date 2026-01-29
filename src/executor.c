@@ -90,12 +90,12 @@ texec_status_t texec_executor_destroy(texec_executor_t* ex) {
   return ex->vtbl->destroy(ex);
 }
 
-texec_status_t texec_executor_submit(texec_executor_t* ex, const texec_executor_submit_info_t* info, texec_task_handle_t** out_handle) {
+texec_status_t texec_executor_submit(texec_executor_t* ex, const texec_submit_info_t* info, texec_task_handle_t** out_handle) {
   if (!ex || !out_handle) return TEXEC_STATUS_INVALID_ARGUMENT;
   return ex->vtbl->submit(ex, info, out_handle);
 }
 
-texec_status_t texec_executor_submit_many(texec_executor_t* ex, const texec_executor_submit_info_t* infos, size_t count, texec_task_group_t** out_group) {
+texec_status_t texec_executor_submit_many(texec_executor_t* ex, const texec_submit_info_t* infos, size_t count, texec_task_group_t** out_group) {
   if (!ex || !out_group) return TEXEC_STATUS_INVALID_ARGUMENT;
   return ex->vtbl->submit_many(ex, infos, count, out_group);
 }
