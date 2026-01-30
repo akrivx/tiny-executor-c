@@ -19,6 +19,7 @@ add_library(texec
   src/default_allocator.c
   src/executor.c
   src/queue.c
+  src/ringbuf.c
   src/task_group.c
   src/task_handle.c
   src/thread_pool_executor.c
